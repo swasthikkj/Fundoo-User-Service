@@ -1,7 +1,8 @@
 package com.bridgelabz.fundoouserservice.dto;
 
-import java.io.File;
 import java.time.LocalDateTime;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
 @Data
@@ -15,5 +16,5 @@ public class UserServiceDTO {
 	private boolean isDeleted;
 	private String dateOfbirth;
 	private long phoneNumber;
-	private File profilePic;
+	private MultipartFile profilePic;
 }

@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.bridgelabz.fundoouserservice.dto.UserServiceDTO;
 
 import lombok.Data;
@@ -31,7 +33,7 @@ public class UserServiceModel {
 	private boolean isDeleted;
 	private String dateOfbirth;
 	private long phoneNumber;
-	private File profilePic;
+	private MultipartFile profilePic;
 	
 	public UserServiceModel(UserServiceDTO userServiceDTO) {		
 		this.name = userServiceDTO.getName();

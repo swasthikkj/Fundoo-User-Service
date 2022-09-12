@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoouserservice.util.TokenUtil;
 import com.bridgelabz.fundoouserservice.dto.UserServiceDTO;
@@ -24,7 +25,7 @@ public class UserService implements IUserService {
 
 	@Autowired
 	MailService mailService;
-	
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
@@ -75,7 +76,7 @@ public class UserService implements IUserService {
 			throw new UserNotFoundException(400, "User not present");
 		}	
 	}
-	
+
 	@Override
 	public Response deleteUser(Long id,String token) {
 		Long decode = tokenUtil.decodeToken(token);
@@ -93,7 +94,7 @@ public class UserService implements IUserService {
 		}
 		throw new UserNotFoundException(400, "Token not found");	
 	}
-	
+
 	@Override
 	public Response restoreUser(Long id,String token) {
 		Long decode = tokenUtil.decodeToken(token);
@@ -111,7 +112,7 @@ public class UserService implements IUserService {
 		}
 		throw new UserNotFoundException(400, "Token not found");	
 	}
-	
+
 	@Override
 	public Response permanentDelete(Long id, String token) {
 		Long userId = tokenUtil.decodeToken(token);
@@ -121,13 +122,28 @@ public class UserService implements IUserService {
 			if(isIdPresent.isPresent()) {
 				userRepository.delete(isIdPresent.get());
 				return new Response(200, "Success", isIdPresent.get());
-			} else {
-				throw new UserNotFoundException(400, "User not found");
-			}		
-		}
+			} 
+			throw new UserNotFoundException(400, "User not found");
+		}		
 		throw new UserNotFoundException(400, "Invalid token");
 	}
 	
+	@Override
+	public Response setProfilePic(Long id, MultipartFile profile, String token) {
+		Long userId = tokenUtil.decodeToken(token);
+		Optional<UserServiceModel> isUserPresent = userRepository.findById(userId);
+		if(isUserPresent.isPresent()) {
+			Optional<UserServiceModel> isIdPresent = userRepository.findById(id);
+			if(isIdPresent.isPresent()) {
+				isIdPresent.get().setProfilePic(profile);
+				userRepository.delete(isIdPresent.get());
+				return new Response(200, "Success", isIdPresent.get());
+			} 
+			throw new UserNotFoundException(400, "User not found");
+		}		
+		throw new UserNotFoundException(400, "Invalid token");
+	}
+
 	@Override
 	public Response login(String emailId, String password) {
 		Optional<UserServiceModel> isEmailPresent = userRepository.findByEmailId(emailId);
@@ -140,7 +156,7 @@ public class UserService implements IUserService {
 		}
 		throw new UserNotFoundException(400, "User not found");
 	}
-	
+
 	@Override
 	public UserServiceModel changePassword(String token, String password) {
 		Long decode = tokenUtil.decodeToken(token);

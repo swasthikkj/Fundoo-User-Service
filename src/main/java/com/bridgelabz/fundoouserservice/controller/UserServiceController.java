@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoouserservice.dto.UserServiceDTO;
 import com.bridgelabz.fundoouserservice.model.UserServiceModel;
@@ -50,7 +51,7 @@ public class UserServiceController {
 	 * Purpose:update user
 	 */
 	
-	@PutMapping("updateUser/{id}")
+	@PutMapping("updateUser")
 	public ResponseEntity<Response> updateUser(@RequestBody UserServiceDTO userServiceDTO, @PathVariable Long id, @RequestHeader String token) {
 		UserServiceModel userModel = userService.updateUser(userServiceDTO, id, token);
 		Response response = new Response(200, "User updated successfully", userModel);
@@ -111,7 +112,18 @@ public class UserServiceController {
 		Response response = new Response(200, "User deleted permanently ", userModel);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+
+	/**
+	 * Purpose:To set profile pic
+	 */
 	
+	@PutMapping("profilepic/{id}")
+	public ResponseEntity<Response> setProfilePic(@PathVariable Long id, @RequestParam MultipartFile profilePic, @RequestHeader String token) {
+		Response userModel = userService.setProfilePic(id, profilePic, token);
+		Response response = new Response(200, "User profile pic set successfully", userModel);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 	/**
 	 * Purpose:login to generate token
 	 * @Param enter email and password

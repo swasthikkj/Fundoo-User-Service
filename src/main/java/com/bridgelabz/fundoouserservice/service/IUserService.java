@@ -5,6 +5,8 @@ import com.bridgelabz.fundoouserservice.util.Response;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.bridgelabz.fundoouserservice.dto.UserServiceDTO;
 import com.bridgelabz.fundoouserservice.model.UserServiceModel;
 
@@ -23,6 +25,8 @@ public interface IUserService {
 	Response restoreUser(Long id, String token);
 
 	Response permanentDelete(Long id, String token);
+
+	Response setProfilePic(Long id, MultipartFile profile, String token);
 	
 	Response login(String emailId, String password);
 
