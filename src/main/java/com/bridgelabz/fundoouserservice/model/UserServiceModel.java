@@ -1,20 +1,24 @@
 package com.bridgelabz.fundoouserservice.model;
 
-import java.io.File;
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.bridgelabz.fundoouserservice.dto.UserServiceDTO;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+/**
+ * Purpose:Modrl for user service
+ * @version 4.15.1.RELEASE
+ * @author Swasthik KJ
+ */
 
 @Entity
 @Table(name = "UserService")
@@ -33,18 +37,16 @@ public class UserServiceModel {
 	private boolean isDeleted;
 	private String dateOfbirth;
 	private long phoneNumber;
-	private MultipartFile profilePic;
+	@Column(length = 10000)
+	private String profilePic;
 	
 	public UserServiceModel(UserServiceDTO userServiceDTO) {		
 		this.name = userServiceDTO.getName();
 		this.emailId = userServiceDTO.getEmailId();
 		this.password = userServiceDTO.getPassword();
-		this.createdAt = userServiceDTO.getCreatedAt().now();
-		this.updatedAt = userServiceDTO.getUpdatedAt().now();
 		this.isActive = userServiceDTO.isActive();
 		this.isDeleted = userServiceDTO.isDeleted();
 		this.dateOfbirth = userServiceDTO.getDateOfbirth();
 		this.phoneNumber = userServiceDTO.getPhoneNumber();
-		this.profilePic = userServiceDTO.getProfilePic();
 	}
 }

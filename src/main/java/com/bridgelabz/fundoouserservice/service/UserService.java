@@ -1,5 +1,7 @@
 package com.bridgelabz.fundoouserservice.service;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +17,12 @@ import com.bridgelabz.fundoouserservice.model.UserServiceModel;
 import com.bridgelabz.fundoouserservice.repository.UserServiceRepository;
 import com.bridgelabz.fundoouserservice.util.Response;
 
+/**
+ * Purpose:User service class to perform crud operations
+ * @version 4.15.1.RELEASE
+ * @author Swasthik KJ
+ */
+
 @Service
 public class UserService implements IUserService {
 	@Autowired
@@ -29,15 +37,24 @@ public class UserService implements IUserService {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
+	/**
+	 * Purpose:add user and notify through email
+	 */
+
 	@Override
 	public UserServiceModel addUser(UserServiceDTO userServiceDTO) {
 		UserServiceModel model = new UserServiceModel(userServiceDTO);
+		model.setCreatedAt(LocalDateTime.now());
 		userRepository.save(model);
 		String body = "User is added succesfully with userId " + model.getId();
 		String subject = "User Registration Successfull";
 		mailService.send(model.getEmailId(), subject, body);		
 		return model;
 	}
+
+	/**
+	 * Purpose:update user 
+	 */
 
 	@Override
 	public UserServiceModel updateUser(UserServiceDTO userServiceDTO, Long id, String token) {
@@ -49,9 +66,7 @@ public class UserService implements IUserService {
 			isUserPresent.get().setPassword(userServiceDTO.getPassword());
 			isUserPresent.get().setPhoneNumber(userServiceDTO.getPhoneNumber());
 			isUserPresent.get().setDateOfbirth(userServiceDTO.getDateOfbirth());
-			isUserPresent.get().setProfilePic(userServiceDTO.getProfilePic());
-			isUserPresent.get().setCreatedAt(userServiceDTO.getCreatedAt().now());
-			isUserPresent.get().setUpdatedAt(userServiceDTO.getUpdatedAt().now());
+			isUserPresent.get().setUpdatedAt(LocalDateTime.now());
 			userRepository.save(isUserPresent.get());
 			String body = "User updated successfully with user Id" + isUserPresent.get().getId();
 			String subject = "User updated Successfully";
@@ -61,10 +76,18 @@ public class UserService implements IUserService {
 		throw new UserNotFoundException(400, "User not present");
 	}
 
+	/**
+	 * Purpose:fetch user by id
+	 */
+
 	@Override
 	public Optional<UserServiceModel> getUserById(Long id, String token) {		
 		return userRepository.findById(id);
 	}
+
+	/**
+	 * Purpose:fetch all users
+	 */
 
 	@Override
 	public List<UserServiceModel> getAllUsers(String token) {
@@ -76,6 +99,10 @@ public class UserService implements IUserService {
 			throw new UserNotFoundException(400, "User not present");
 		}	
 	}
+
+	/**
+	 * Purpose:delete user
+	 */
 
 	@Override
 	public Response deleteUser(Long id,String token) {
@@ -95,8 +122,12 @@ public class UserService implements IUserService {
 		throw new UserNotFoundException(400, "Token not found");	
 	}
 
+	/**
+	 * Purpose:restore user
+	 */
+
 	@Override
-	public Response restoreUser(Long id,String token) {
+	public Response restoreUser(Long id, String token) {
 		Long decode = tokenUtil.decodeToken(token);
 		Optional<UserServiceModel> isTokenPresent = userRepository.findById(decode);
 		if (isTokenPresent.isPresent()) {
@@ -106,12 +137,15 @@ public class UserService implements IUserService {
 				isIdPresent.get().setDeleted(false);
 				userRepository.save(isIdPresent.get());
 				return new Response(200, "success", isIdPresent.get());
-			} else {
-				throw new UserNotFoundException(400,"User not present");
 			}
+			throw new UserNotFoundException(400,"User not present");
 		}
 		throw new UserNotFoundException(400, "Token not found");	
 	}
+
+	/**
+	 * Purpose:delete user permanently
+	 */
 
 	@Override
 	public Response permanentDelete(Long id, String token) {
@@ -127,22 +161,25 @@ public class UserService implements IUserService {
 		}		
 		throw new UserNotFoundException(400, "Invalid token");
 	}
-	
+
+	/**
+	 * Purpose:setting profile pic of user
+	 */
+
 	@Override
-	public Response setProfilePic(Long id, MultipartFile profile, String token) {
-		Long userId = tokenUtil.decodeToken(token);
-		Optional<UserServiceModel> isUserPresent = userRepository.findById(userId);
-		if(isUserPresent.isPresent()) {
-			Optional<UserServiceModel> isIdPresent = userRepository.findById(id);
-			if(isIdPresent.isPresent()) {
-				isIdPresent.get().setProfilePic(profile);
-				userRepository.delete(isIdPresent.get());
-				return new Response(200, "Success", isIdPresent.get());
-			} 
-			throw new UserNotFoundException(400, "User not found");
-		}		
-		throw new UserNotFoundException(400, "Invalid token");
+	public Response setProfilePic(Long id, MultipartFile profile) throws IOException {
+		Optional<UserServiceModel> isIdPresent = userRepository.findById(id);
+		if(isIdPresent.isPresent()) {
+			isIdPresent.get().setProfilePic(String.valueOf(profile.getBytes()));
+			userRepository.save(isIdPresent.get());
+			return new Response(200, "Success", isIdPresent.get());
+		}
+		throw new UserNotFoundException(400, "User not found");
 	}
+
+	/**
+	 * Purpose:login user and generate token
+	 */
 
 	@Override
 	public Response login(String emailId, String password) {
@@ -156,6 +193,10 @@ public class UserService implements IUserService {
 		}
 		throw new UserNotFoundException(400, "User not found");
 	}
+
+	/**
+	 * Purpose:change user password
+	 */
 
 	@Override
 	public UserServiceModel changePassword(String token, String password) {
@@ -172,6 +213,10 @@ public class UserService implements IUserService {
 		throw new UserNotFoundException(400, "Token not found");
 	}
 
+	/**
+	 * Purpose:reset user password
+	 */
+
 	@Override
 	public Response resetPassword(String emailId) {
 		Optional<UserServiceModel> isMailPresent = userRepository.findByEmailId(emailId);
@@ -182,12 +227,29 @@ public class UserService implements IUserService {
 		throw new UserNotFoundException(400, "Email not found");
 	}
 
+	/**
+	 * Purpose:validate user
+	 */
+
 	@Override
 	public Boolean validateUser(String token) {
 		Long decode = tokenUtil.decodeToken(token);
 		Optional<UserServiceModel> isTokenPresent = userRepository.findById(decode);
 		if (isTokenPresent.isPresent())
 			return true;
+		throw new UserNotFoundException(400, "Token not found");
+	}
+
+	/**
+	 * Purpose:validate email
+	 */
+
+	@Override
+	public Boolean validateEmail(String email) {
+		Optional<UserServiceModel> isEmailPresent = userRepository.findByEmailId(email);
+		if (isEmailPresent.isPresent()) {
+			return true;
+		} 
 		throw new UserNotFoundException(400, "Token not found");
 	}
 }
