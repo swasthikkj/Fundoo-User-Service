@@ -57,9 +57,9 @@ public class UserService implements IUserService {
 	 */
 
 	@Override
-	public UserServiceModel updateUser(UserServiceDTO userServiceDTO, Long id, String token) {
-		Long userId = tokenUtil.decodeToken(token);
-		Optional<UserServiceModel> isUserPresent = userRepository.findById(id);
+	public UserServiceModel updateUser(UserServiceDTO userServiceDTO, Long userId, String token) {
+		Long decode = tokenUtil.decodeToken(token);
+		Optional<UserServiceModel> isUserPresent = userRepository.findById(userId);
 		if(isUserPresent.isPresent()) {
 			isUserPresent.get().setName(userServiceDTO.getName());
 			isUserPresent.get().setEmailId(userServiceDTO.getEmailId());
@@ -81,8 +81,8 @@ public class UserService implements IUserService {
 	 */
 
 	@Override
-	public Optional<UserServiceModel> getUserById(Long id, String token) {		
-		return userRepository.findById(id);
+	public Optional<UserServiceModel> getUserById(Long userId, String token) {		
+		return userRepository.findById(userId);
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class UserService implements IUserService {
 
 	@Override
 	public List<UserServiceModel> getAllUsers(String token) {
-		Long userId = tokenUtil.decodeToken(token);
+		Long decode = tokenUtil.decodeToken(token);
 		List<UserServiceModel> getAllUsers = userRepository.findAll();
 		if(getAllUsers.size()>0) {
 			return getAllUsers;
@@ -105,11 +105,11 @@ public class UserService implements IUserService {
 	 */
 
 	@Override
-	public Response deleteUser(Long id,String token) {
+	public Response deleteUser(Long userId, String token) {
 		Long decode = tokenUtil.decodeToken(token);
 		Optional<UserServiceModel> isTokenPresent = userRepository.findById(decode);
 		if (isTokenPresent.isPresent()) {
-			Optional<UserServiceModel> isIdPresent = userRepository.findById(id);
+			Optional<UserServiceModel> isIdPresent = userRepository.findById(userId);
 			if(isIdPresent.isPresent()) {
 				isIdPresent.get().setActive(false);
 				isIdPresent.get().setDeleted(true);
@@ -127,11 +127,11 @@ public class UserService implements IUserService {
 	 */
 
 	@Override
-	public Response restoreUser(Long id, String token) {
+	public Response restoreUser(Long userId, String token) {
 		Long decode = tokenUtil.decodeToken(token);
 		Optional<UserServiceModel> isTokenPresent = userRepository.findById(decode);
 		if (isTokenPresent.isPresent()) {
-			Optional<UserServiceModel> isIdPresent = userRepository.findById(id);
+			Optional<UserServiceModel> isIdPresent = userRepository.findById(userId);
 			if(isIdPresent.isPresent()) {
 				isIdPresent.get().setActive(true);
 				isIdPresent.get().setDeleted(false);
@@ -148,11 +148,11 @@ public class UserService implements IUserService {
 	 */
 
 	@Override
-	public Response permanentDelete(Long id, String token) {
-		Long userId = tokenUtil.decodeToken(token);
-		Optional<UserServiceModel> isUserPresent = userRepository.findById(userId);
+	public Response permanentDelete(Long userId, String token) {
+		Long decode = tokenUtil.decodeToken(token);
+		Optional<UserServiceModel> isUserPresent = userRepository.findById(decode);
 		if(isUserPresent.isPresent()) {
-			Optional<UserServiceModel> isIdPresent = userRepository.findById(id);
+			Optional<UserServiceModel> isIdPresent = userRepository.findById(userId);
 			if(isIdPresent.isPresent()) {
 				userRepository.delete(isIdPresent.get());
 				return new Response(200, "Success", isIdPresent.get());
@@ -167,8 +167,8 @@ public class UserService implements IUserService {
 	 */
 
 	@Override
-	public Response setProfilePic(Long id, MultipartFile profile) throws IOException {
-		Optional<UserServiceModel> isIdPresent = userRepository.findById(id);
+	public Response setProfilePic(Long userId, MultipartFile profile) throws IOException {
+		Optional<UserServiceModel> isIdPresent = userRepository.findById(userId);
 		if(isIdPresent.isPresent()) {
 			isIdPresent.get().setProfilePic(String.valueOf(profile.getBytes()));
 			userRepository.save(isIdPresent.get());

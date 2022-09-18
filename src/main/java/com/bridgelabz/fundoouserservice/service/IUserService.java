@@ -21,19 +21,19 @@ public interface IUserService {
 	
 	UserServiceModel addUser(UserServiceDTO userServiceDTO);
 	
-	UserServiceModel updateUser(UserServiceDTO userServiceDTO, Long id, String token);
+	UserServiceModel updateUser(UserServiceDTO userServiceDTO, Long userId, String token);
 		
-	Optional<UserServiceModel> getUserById(Long id, String token);
+	Optional<UserServiceModel> getUserById(Long userId, String token);
 
 	List<UserServiceModel> getAllUsers(String token);
 	
-	Response deleteUser(Long id, String token);
+	Response deleteUser(Long userId, String token);
 
-	Response restoreUser(Long id, String token);
+	Response restoreUser(Long userId, String token);
 
-	Response permanentDelete(Long id, String token);
+	Response permanentDelete(Long userId, String token);
 
-	Response setProfilePic(Long id, MultipartFile profile) throws IOException;
+	Response setProfilePic(Long userId, MultipartFile profile) throws IOException;
 	
 	Response login(String emailId, String password);
 

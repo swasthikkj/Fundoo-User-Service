@@ -34,7 +34,7 @@ import com.bridgelabz.fundoouserservice.util.Response;
  */
 
 @RestController
-@RequestMapping("/fundoouserservice")
+@RequestMapping("/fundooUserService")
 public class UserServiceController {
 	@Autowired
 	IUserService userService;
@@ -44,7 +44,7 @@ public class UserServiceController {
 	 */
 
 	@PostMapping("/addUser")
-	public ResponseEntity<Response> addUser(@Valid @RequestBody UserServiceDTO userServiceDTO) {
+	public ResponseEntity<Response> addUser(@RequestBody UserServiceDTO userServiceDTO) {
 		UserServiceModel userModel = userService.addUser(userServiceDTO);
 		Response response = new Response(200, "user added successfully", userModel);
 		return new ResponseEntity<>(response, HttpStatus.OK);		
@@ -55,7 +55,7 @@ public class UserServiceController {
 	 */
 
 	@PutMapping("updateUser")
-	public ResponseEntity<Response> updateUser(@Valid @RequestBody UserServiceDTO userServiceDTO, @PathVariable Long id, @RequestHeader String token) {
+	public ResponseEntity<Response> updateUser(@RequestBody UserServiceDTO userServiceDTO, @PathVariable Long id, @RequestHeader String token) {
 		UserServiceModel userModel = userService.updateUser(userServiceDTO, id, token);
 		Response response = new Response(200, "User updated successfully", userModel);
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -109,7 +109,7 @@ public class UserServiceController {
 	 * Purpose:delete permanent user
 	 */
 
-	@DeleteMapping("deletepermanent/{id}")
+	@DeleteMapping("deletePermanent/{id}")
 	public ResponseEntity<Response> permanentDelete(@PathVariable Long id,@RequestHeader String token) {
 		Response userModel = userService.permanentDelete(id,token);
 		Response response = new Response(200, "User deleted permanently ", userModel);
@@ -121,7 +121,7 @@ public class UserServiceController {
 	 * @throws IOException 
 	 */
 
-	@PutMapping("profilepic/{id}")
+	@PutMapping("profilePic/{id}")
 	public ResponseEntity<Response> setProfilePic(@PathVariable Long id, @RequestParam MultipartFile profilePic) throws IOException {
 		Response userModel = userService.setProfilePic(id, profilePic);
 		Response response = new Response(200, "User profile pic set successfully", userModel);
@@ -143,7 +143,7 @@ public class UserServiceController {
 	 * @Param email
 	 */
 
-	@PostMapping("/resetpassword")
+	@PostMapping("/resetPassword")
 	public Response resetPassword(@RequestParam String emailId) {
 		return userService.resetPassword(emailId);
 	}
@@ -153,7 +153,7 @@ public class UserServiceController {
 	 * @Param password
 	 */
 
-	@PutMapping("/changepassword/{token}")
+	@PutMapping("/changePassword/{token}")
 	public UserServiceModel changePassword(@PathVariable("token") String token, @RequestParam String password) {
 		return userService.changePassword(token, password);
 	}
@@ -162,7 +162,7 @@ public class UserServiceController {
 	 * Purpose:validate user
 	 */
 
-	@GetMapping("/validateuser/{token}")
+	@GetMapping("/validateUser/{token}")
 	public Boolean validateUser(@PathVariable String token) {
 		return userService.validateUser(token);
 	}
@@ -171,7 +171,7 @@ public class UserServiceController {
 	 * Purpose:validate email
 	 */
 
-	@GetMapping("/validateemail/{email}")
+	@GetMapping("/validateEmail/{email}")
 	public Boolean validateEmail(@PathVariable String email) {
 		return userService.validateEmail(email);
 	}
